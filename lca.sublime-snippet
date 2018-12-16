@@ -1,0 +1,33 @@
+<snippet>
+	<content><![CDATA[
+#define dist(u,v) (lev[u] + lev[v] - (lev[lca(u,v)] << 1))
+void dfs_lca(int node, int p =0 , int l =1)
+{
+    anc[node][0] = p;
+    lev[node] = l;
+    for(int i = 1 ; i<logn ; i++)
+        anc[node][i] = anc[anc[node][i-1]][i-1];
+    for(int i: adj[node])
+        if(i!=p)
+            dfs_lca(i, node, l+1);
+}
+int lca ( int u , int v )
+{
+    if(lev[u] > lev[v])
+        swap(u,v);
+    for(int i=logn-1; i>=0; i--)
+        if(lev[anc[v][i]] >= lev[u])
+            v = anc[v][i];
+    if(u == v)
+        return u;
+    for(int i=logn-1;i>=0;i--)
+        if(anc[u][i]!=anc[v][i])
+            u=anc[u][i] , v=anc[v][i];
+    return anc[u][0];
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>lca</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

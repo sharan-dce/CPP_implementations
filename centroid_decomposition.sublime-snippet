@@ -1,0 +1,39 @@
+<snippet>
+	<content><![CDATA[
+int count(int node ,int par = 0)
+{
+    cnt[node] = 1;
+    for(int &i: adj[node])
+        if(i!=par)
+            cnt[node] += count(i, node);
+    return cnt[node];
+}
+
+void find_c(int node, int p=0)
+{
+    int mx=0, u, n = cnt[node];
+    for(int &i: adj[node])
+        if(!vis[i] && mx<cnt[i])
+            mx = cnt[i] , u=i;
+    while(mx > n/2)
+    {
+        mx=0;
+        swap(cnt[node] , cnt[u]);
+        cnt[node] = cnt[u] - cnt[node];
+        node=u;
+        for(int &i: adj[node])
+            if(!vis[i] && mx<cnt[i])
+                mx = cnt[i] , u=i;
+    }
+    par[node] = p;
+    vis[node]=1;
+    for(int &i:adj[node])
+        if(!vis[i])
+            find_c(i,node);
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>centroid</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

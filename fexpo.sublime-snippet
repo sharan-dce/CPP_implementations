@@ -1,0 +1,15 @@
+<snippet>
+	<content><![CDATA[
+ll power(ll a, ll n){
+    ll ans = 1; a %= M;
+    for(; n; n >>= 1, a = (a * a) % M)
+        if(n & 1)
+            ans = (a * ans)%M;
+    return ans;
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>fastexpo</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

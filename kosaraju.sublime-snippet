@@ -1,0 +1,51 @@
+<snippet>
+	<content><![CDATA[
+vector<int> adj[N],adjt[N],ans[N];
+int m,n,par[N];
+list<int> l;
+map<int,vector<int> >scc;
+bool vis[N];
+void dfs1(int u)
+{
+	if(!vis[u])
+	{
+		vis[u]=1;
+		for(int j:adj[u])
+			dfs1(j);
+		l.push_front(u);
+	}
+}
+void dfs2(int u,int r)
+{
+	if(!vis[u])
+	{
+		vis[u]=1,par[u]=r;
+		for(int i:adjt[u])
+			dfs2(i,r);
+	}
+}
+void kos()
+{
+	fill(vis,vis+n+2,0);
+	for(int i=1;i<=n;i++)
+		if(!vis[i])
+			dfs1(i);
+	fill(vis,vis+n+2,0);
+	for(int i:l)
+		if(!vis[i])
+			dfs2(i,i);
+	for(int i=1;i<=n;i++)
+		scc[par[i]].push_back(i);
+	for(int i=1;i<=n;i++)
+	{
+		for(int j:adj[i])
+			if(par[i]!=par[j])
+				ans[par[i]].push_back(par[j]);
+	}
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>kosaraju</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

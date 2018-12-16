@@ -1,0 +1,75 @@
+<snippet>
+	<content><![CDATA[
+        //4 * N size liyo
+void build(int64_t node, int64_t start, int64_t end)
+{
+    if(start == end)
+    {
+        st[node] = A[start];
+    }
+    else
+    {
+        int64_t mid = start + end >> 1;
+        build(node << 1, start, mid);
+        build(node << 1 | 1, mid + 1, end);
+        st[node] = st[node << 1] + st[node << 1 | 1];
+    }
+}
+
+void update(int64_t node, int64_t start, int64_t end, int64_t l, int64_t r, int64_t val)
+{
+    if(lazy[node] != 0)
+    { 
+        st[node] += (end - start + 1) * lazy[node];
+        if(start != end)
+        {
+            lazy[node*2] += lazy[node];
+            lazy[node*2+1] += lazy[node];
+        }
+        lazy[node] = 0;
+    }
+    if(start > end || start > r || end < l)
+        return;
+    if(start >= l and end <= r)
+    {
+        st[node] += (end - start + 1) * val;
+        if(start != end)
+        {
+            lazy[node << 1] += val;
+            lazy[node << 1 | 1] += val;
+        }
+        return;
+    }
+    int64_t mid = start + end >> 1;
+    updateRange(node << 1, start, mid, l, r, val);
+    updateRange(node << 1 | 1, mid + 1, end, l, r, val);
+    st[node] = st[node << 1] + st[node << 1 | 1];
+}
+
+int64_t query(int64_t node, int64_t start, int64_t end, int64_t l, int64_t r)
+{
+    if(start > end or start > r or end < l)
+        return 0;
+    if(lazy[node] != 0)
+    {
+        st[node] += (end - start + 1) * lazy[node];
+        if(start != end)
+        {
+            lazy[node << 1] += lazy[node];
+            lazy[node << 1 | 1] += lazy[node];
+        }
+        lazy[node] = 0;
+    }
+    if(start >= l and end <= r)
+        return st[node];
+    int64_t mid = start + end >> 1;
+    int64_t p1 = queryRange(node << 1, start, mid, l, r);
+    int64_t p2 = queryRange(node << 1 | 1, mid + 1, end, l, r);
+    return (p1 + p2);
+}
+	]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>lazy</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

@@ -1,0 +1,42 @@
+<snippet>
+	<content><![CDATA[
+vector<int> adj[N];
+bool vis[N];
+int par[N];
+int tin[N],fup[N];
+set<int> articulation_points;
+set<pair<int,int> >bridge;
+void dfs(int v,int par)
+{
+	int &p=par;
+	vis[v]=1;
+	static int timer;
+	tin[v]=fup[v]=timer++;
+	int ch=0;
+	for(int i:adj[v])
+	{
+		if(i==par)
+			continue;
+		if(vis[i])
+			fup[v]=min(fup[v],tin[i]);
+		else
+		{
+			dfs(i,v);
+			fup[v]=min(fup[v],fup[i]);
+			if(fup[i]>tin[v])
+				bridge.insert(make_pair(v,i)),bridge.insert(make_pair(i,v));
+			ch++;
+			if(p&&fup[i]>=tin[v])
+				articulation_points.insert(v);
+		}
+	}
+	if(par==0&&ch>1)
+		articulation_points.insert(v);
+}
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>bridges</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

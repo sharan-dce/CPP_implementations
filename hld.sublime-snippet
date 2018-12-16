@@ -1,0 +1,141 @@
+<snippet>
+	<content><![CDATA[
+#include <bits/stdc++.h>
+#define fio ios_base::sync_with_stdio(false);cin.tie(0);
+#define ff first
+#define ss second
+#define mp make_pair
+#define pb push_back
+#define int int64_t
+using namespace std;
+typedef pair<int, int> pii;
+const int N = 1e5 + 500, logn = 20;
+int n, l[N], tree[N * 4], anc[N][logn], count_tree[N], c[N], pos[N], cnt, x, y, val[N], ll;
+vector<int> adj[N];
+inline void clear(){
+	cnt = 0;
+	for(int i = 0; i < N; i++){
+		count_tree[i] = val[i] = 0;
+		adj[i].clear();
+		for(int j = 0; j  <logn; j++)
+			anc[i][j] = 0;
+	}
+	fill(tree, tree + 4 * N, 0);
+}
+int query(int node, int start, int end, int l, int r)
+{
+    if(r < start or end < l)
+    	return 0;
+    if(l <= start and end <= r)
+        return tree[node];
+    int mid = start + end >> 1;
+    int p1 = query((node << 1), start, mid, l, r);
+    int p2 = query((node << 1) + 1, mid + 1, end, l, r);
+    return max(p1, p2);
+}
+void update(int node, int start, int end, int idx, int val){
+    if(start == end){
+        tree[node] += val;
+        return;
+    }
+    int mid = start + end >> 1;
+    if(start <= idx and idx <= mid)
+        update((node << 1), start, mid, idx, val);
+    else
+        update((node << 1) + 1, mid + 1, end, idx, val);
+    tree[node] = max(tree[(node << 1)], tree[(node << 1) + 1]);
+}
+int dfs(int node, int parent, int level){
+	l[node] = level;
+	anc[node][0] = parent;
+	for(int i = 1; i < logn; i++)
+		anc[node][i] = anc[anc[node][i - 1]][i - 1];
+	for(int i : adj[node])
+		if(i != parent)
+			count_tree[node] += dfs(i, node, level + 1);
+	return ++count_tree[node];
+}
+int lca(int u, int v){
+	if(l[u] > l[v])
+		swap(u, v);
+	for(int i = logn - 1; i >= 0; i--)
+		if(l[anc[v][i]] >= l[u])
+			v = anc[v][i];
+	if(u == v)
+		return u;
+	for(int i = logn - 1; i >= 0; i--)
+		if(anc[u][i] != anc[v][i])
+			u = anc[u][i], v = anc[v][i];
+	return anc[v][0];
+}
+void hld(int node, int chain){
+	c[node] = chain;
+	pos[node] = ++cnt;
+	update(1, 1, n, cnt, val[node]);
+	int nn = 0;
+	for(int i : adj[node])
+		if(i != anc[node][0] and (nn == 0 or count_tree[nn] < count_tree[i]))
+			nn = i;
+	if(nn)
+		hld(nn, chain);
+	for(int i : adj[node])
+		if(i != anc[node][0] and i != nn)
+			hld(i, i);
+}
+void tree_update(int node, int nw){
+	update(1, 1, n, pos[node], -val[node]);
+	update(1, 1, n, pos[node], nw);
+	val[node] = nw;
+}
+int tree_query(int u, int v){
+	int l = lca(u, v), ans = val[l];
+	while(c[u] != c[l])
+		ans = max(ans, query(1, 1, n, pos[c[u]], pos[u])), u = anc[c[u]][0];
+	while(c[v] != c[l])
+		ans = max(ans, query(1, 1, n, pos[c[v]], pos[v])), v = anc[c[v]][0];
+	ans = max(ans, max(query(1, 1, n, pos[l], pos[u]), query(1, 1, n, pos[l], pos[v])));
+	return ans;
+}
+int32_t main(){
+	#ifndef ONLINE_JUDGE
+	freopen("in.txt","r",stdin);
+	#endif
+	fio
+	int tests;
+	cin >> tests;
+	while(tests--){
+		clear();
+		int m;
+		cin >> m;
+		for(int i = 1; i < m; i++){
+			cin >> x >> y >> ll;
+			int in = i + m;
+			adj[x].pb(in);
+			adj[in].pb(x);
+			adj[y].pb(in);
+			adj[in].pb(y);
+			val[in] = ll;
+		}
+		n = m + m - 1;
+		dfs(1, 0, 1);
+		hld(1, 1);
+		while(1){
+			string s;
+			cin >> s;
+			if(s != "DONE")
+				cin >> x >> y;
+			if(s == "QUERY")
+				cout << tree_query(x, y) << '\n';
+			else if(s == "CHANGE")
+				tree_update(x + m, y);
+			else
+				break;
+		}
+	}
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>hld</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

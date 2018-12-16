@@ -1,0 +1,43 @@
+<snippet>
+	<content><![CDATA[
+void insert(ll val, ll pos=logn-1 , ll node=0)
+{
+	if(pos<0)
+		return;
+	if(trie[node][(val>>pos)&1ll])
+		insert(val,pos-1,trie[node][(val>>pos)&1ll]);
+	else
+	{
+		sz++;
+		trie[node][(val>>pos)&1ll]=sz;
+		insert(val,pos-1,trie[node][(val>>pos)&1ll]);
+	}
+}
+
+void pr(ll node=0, ll pos=logn-1 , ll ans=0)
+{
+	if(pos<0)
+	{
+		cout<<ans<<'\n';
+		return;
+	}
+	if(trie[node][0])
+		pr(trie[node][0],pos-1,ans);
+	if(trie[node][1])
+		pr(trie[node][1],pos-1,ans|(1ll<<pos));
+}
+ll query(ll val, ll node=0, ll pos=logn-1, ll ans=0)
+{
+	if(pos<0)
+		return ans;
+	if(trie[node][((val>>pos)&1ll)^1ll])
+		return query(val, trie[node][((val>>pos)&1ll)^1ll], pos-1, ans| (1ll<< pos));
+	else
+		return query(val, trie[node][((val>>pos)&1ll)], pos-1, ans);
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>01trie</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

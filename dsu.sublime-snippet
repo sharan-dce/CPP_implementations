@@ -1,0 +1,42 @@
+<snippet>
+	<content>
+<![CDATA[
+class dsu
+{
+	int rk[N];
+	int par[N];
+public:
+	dsu()
+	{
+		for(int i=0;i<N;i++)
+			rk[i]=1,par[i]=i;
+	}
+	void un(int a,int b)
+	{
+		a=find(a);
+		b=find(b);
+		if(a==b)
+			return;
+		if(rk[a]>rk[b])
+			swap(a,b);
+		par[a]=b;
+		rk[b]+=rk[a];
+	}
+	int find(int a)
+	{
+		if(par[a]==a)
+			return a;
+		return par[a]=find(par[a]);
+	}
+	int rank(int a)
+	{
+		return rk[a];
+	}
+};
+]]>
+</content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>dsu</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

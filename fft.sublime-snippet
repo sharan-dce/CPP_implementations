@@ -1,0 +1,94 @@
+<snippet>
+	<content><![CDATA[
+#include <bits/stdc++.h>
+#define fio ios_base::sync_with_stdio(false);cin.tie(0);
+#define ff first
+#define ss second
+#define mp make_pair
+#define pb push_back
+#define int int64_t
+#define PI 3.14159265358979323846264338327950288419716939937510
+#define sqr(n) ((n) * (n))
+#define add(a, b) ((((a) % M) + ((b) % M)) % M)
+#define prod(a, b) ((((a) % M) * ((b) % M)) % M)
+typedef long double ld;
+#define minus(a, b) ((((a) % M) - ((b) % M) + M) % M)
+using namespace std;
+typedef pair<int, int> pii;
+typedef complex<ld> comp;
+const int N = 2e6 + 9;
+const int M = 1e9 + 7;
+int n, t;
+inline int reverse_(int n, int lg){
+	int ans = 0;
+	for(int i = 0; i < lg; i++)
+		ans |= ((n >> i) & 1) << lg - i - 1;
+	return ans;
+}
+void fft(vector<comp> &v, bool invert){
+	int lg = 0, n = v.size();
+	while((1 << lg) < n)
+		lg++;
+	for(int i = 0; i < n; i++)
+		if(i < reverse_(i, lg))
+			swap(v[i], v[reverse_(i, lg)]);
+	for(int sz = 2; sz <= n; sz <<= 1){
+		ld arg = 2.0 * PI / sz * (invert ? -1 : 1);
+		comp go = comp(cos(arg), sin(arg));
+		for(int i = 0; i < n; i += sz){
+			comp fact = comp(1, 0);
+			for(int j = 0; j < (sz >> 1); j++){
+				comp a = v[i + j], b = fact * v[i + j + (sz >> 1)];
+				v[i + j] = a + b, v[i + j + (sz >> 1)] = a - b;
+				fact *= go;
+			}
+		}
+	}
+	for(int i = 0; i < n and invert; i++)
+		v[i] /= 1.0 * n;
+}
+
+vector<int> multiply(vector<int> const& a, vector<int> const& b) {
+    vector<comp> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+    int n = 1;
+    while (n < a.size() + b.size()) 
+        n <<= 1;
+    fa.resize(n);
+    fb.resize(n);
+    fft(fa, false);
+    fft(fb, false);
+    for (int i = 0; i < n; i++)
+        fa[i] *= fb[i];
+    fft(fa, true);
+    vector<int> result(n);
+    for(int i = 0; i < n; i++)
+        result[i] = round(real(fa[i]));
+    for(int i = 0; i < ::n + ::n + 1; i++)
+    	cout << result[i] << ' ';
+    cout << endl;
+    return result;
+}
+void solve(){
+	cin >> n;
+	vector<int> a(n + 1), b(n + 1);
+	for(int i = 0; i < n + 1; i++)
+		cin >> a[i];
+	for(int i = 0; i < n + 1; i++)
+		cin >> b[i];
+	multiply(a, b);
+}
+int32_t main(){
+	#ifndef ONLINE_JUDGE
+	freopen("in","r",stdin);
+	#endif
+	fio
+	cin >> t;
+	while(t--)
+		solve();
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>fft</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>
